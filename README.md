@@ -6,7 +6,7 @@ Collage
 - Collage is tiny. Single header and source files.
 - Collage is stand-alone. All dependencies are embedded.
 - Collage is cross-platform.
-- Collage is MIT licensed.
+- Collage is BOOST licensed.
 
 ### sample
 ```c++
@@ -31,5 +31,5 @@ int main() {
 ```
 
 ### licenses
-- [Collage](https://github.com/r-lyeh/collage), MIT licensed.
+- [Collage](https://github.com/r-lyeh/collage), BOOST licensed.
 - [bsdiff](https://github.com/mendsley/bsdiff), by Colin Percival and Matthew Endsley, BSD2 licensed.
