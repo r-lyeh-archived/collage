@@ -161,22 +161,14 @@ static int64_t search(const int64_t *I,const uint8_t *old,int64_t oldsize,
 	};
 }
 
-static void offtout(int64_t x,uint8_t *buf)
-{
-	int64_t y;
-
-	if(x<0) y=-x; else y=x;
-
-	buf[0]=y%256;y-=buf[0];
-	y=y/256;buf[1]=y%256;y-=buf[1];
-	y=y/256;buf[2]=y%256;y-=buf[2];
-	y=y/256;buf[3]=y%256;y-=buf[3];
-	y=y/256;buf[4]=y%256;y-=buf[4];
-	y=y/256;buf[5]=y%256;y-=buf[5];
-	y=y/256;buf[6]=y%256;y-=buf[6];
-	y=y/256;buf[7]=y%256;
-
-	if(x<0) buf[7]|=0x80;
+static int offtout( uint64_t i, uint8_t *buf ) {
+	unsigned char *origin = buf;
+	do {
+		*buf++ = (unsigned char)( 0x80 | (i & 0x7f));
+		i >>= 7;
+	} while( i > 0 );
+	*(buf-1) ^= 0x80;
+	return buf - origin;
 }
 
 static int64_t writedata(struct bsdiff_stream* stream, const void* buffer, int64_t length)
@@ -221,7 +213,7 @@ static int bsdiff_internal(const struct bsdiff_request req)
 	int64_t overlap,Ss,lens;
 	int64_t i;
 	uint8_t *buffer;
-	uint8_t buf[8 * 3];
+	uint8_t buf[10 * 3], *ptr;
 
 	if((V=(int64_t*)req.stream->malloc((req.oldsize+1)*sizeof(int64_t)))==NULL) return -1;
 	I = req.I;
@@ -286,12 +278,13 @@ static int bsdiff_internal(const struct bsdiff_request req)
 				lenb-=lens;
 			};
 
-			offtout(lenf,buf);
-			offtout((scan-lenb)-(lastscan+lenf),buf+8);
-			offtout((pos-lenb)-(lastpos+lenf),buf+16);
+			ptr = buf;
+			ptr += offtout(lenf,buf);
+			ptr += offtout((scan-lenb)-(lastscan+lenf),ptr);
+			ptr += offtout((pos-lenb)-(lastpos+lenf),ptr);
 
 			/* Write control data */
-			if (writedata(req.stream, buf, sizeof(buf)))
+			if (writedata(req.stream, buf, ptr - buf))
 				return -1;
 
 			/* Write diff data */
@@ -453,27 +446,17 @@ int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, 
 
 #if !defined(BSPATCH_HEADER_ONLY)
 
-static int64_t offtin(uint8_t *buf)
-{
-	int64_t y;
-
-	y=buf[7]&0x7F;
-	y=y*256;y+=buf[6];
-	y=y*256;y+=buf[5];
-	y=y*256;y+=buf[4];
-	y=y*256;y+=buf[3];
-	y=y*256;y+=buf[2];
-	y=y*256;y+=buf[1];
-	y=y*256;y+=buf[0];
-
-	if(buf[7]&0x80) y=-y;
-
-	return y;
+static int64_t offtin( const uint8_t *buf ) {
+	uint64_t out = 0, j = -7;
+	do {
+		out |= (( ((uint64_t)(*buf)) & 0x7f) << (j += 7) );
+	} while( ((uint64_t)(*buf++)) & 0x80 );
+	return (int64_t)out;
 }
 
 int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, struct bspatch_stream* stream)
 {
-	uint8_t buf[8];
+	uint8_t buf[10], *ptr;
 	int64_t oldpos,newpos;
 	int64_t ctrl[3];
 	int64_t i;
@@ -482,8 +465,15 @@ int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, 
 	while(newpos<newsize) {
 		/* Read control data */
 		for(i=0;i<=2;i++) {
-			if (stream->read(stream, buf, 8))
-				return -1;
+			ptr = &buf[0];
+			for(;;) {
+				if( stream->read(stream, ptr, 1) ) {
+					return -1;
+				}
+				if( ((*ptr++) & 0x80) == 0x00 ) {
+					break;
+				}
+			}
 			ctrl[i]=offtin(buf);
 		};
 

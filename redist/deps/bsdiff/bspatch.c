@@ -37,27 +37,17 @@ int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, 
 
 #if !defined(BSPATCH_HEADER_ONLY)
 
-static int64_t offtin(uint8_t *buf)
-{
-	int64_t y;
-
-	y=buf[7]&0x7F;
-	y=y*256;y+=buf[6];
-	y=y*256;y+=buf[5];
-	y=y*256;y+=buf[4];
-	y=y*256;y+=buf[3];
-	y=y*256;y+=buf[2];
-	y=y*256;y+=buf[1];
-	y=y*256;y+=buf[0];
-
-	if(buf[7]&0x80) y=-y;
-
-	return y;
+static int64_t offtin( const uint8_t *buf ) {
+    uint64_t out = 0, j = -7;
+    do {
+        out |= (( ((uint64_t)(*buf)) & 0x7f) << (j += 7) );
+    } while( ((uint64_t)(*buf++)) & 0x80 );
+    return (int64_t)out;
 }
 
 int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, struct bspatch_stream* stream)
 {
-	uint8_t buf[8];
+	uint8_t buf[10], *ptr;
 	int64_t oldpos,newpos;
 	int64_t ctrl[3];
 	int64_t i;
@@ -66,8 +56,15 @@ int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, 
 	while(newpos<newsize) {
 		/* Read control data */
 		for(i=0;i<=2;i++) {
-			if (stream->read(stream, buf, 8))
-				return -1;
+			ptr = &buf[0];
+			for(;;) {
+				if( stream->read(stream, ptr, 1) ) {
+					return -1;
+				}
+				if( ((*ptr++) & 0x80) == 0x00 ) {
+					break;
+				}
+			}
 			ctrl[i]=offtin(buf);
 		};
 

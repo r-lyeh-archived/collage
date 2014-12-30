@@ -3,8 +3,8 @@
 #include "collage.hpp"
 
 int main() {
-    std::string source = "hello world";
-    std::string target = "hello cruel \x1 world";
+    std::string source = "hello world and thanks";
+    std::string target = "hello cruel \x1 world. thanks for the fish.";
 
     std::string patch = collage::diff( source, target );
     assert( !patch.empty() );
