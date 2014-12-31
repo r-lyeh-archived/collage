@@ -107,6 +107,13 @@ static void split(int64_t *I,int64_t *V,int64_t start,int64_t len,int64_t h)
 	if(start+len>kk) split(I,V,kk,start+len-kk,h);
 }
 
+/* [ref] Code commented because of http://stackoverflow.com/questions/12751775/why-does-bsdiff-exe-have-trouble-with-this-smaller-file */
+/* [ref] See Graeme Johnson's answer */
+#if 1//def BSDIFF_USE_SAIS
+#include "sais.h"
+#include "sais.c"
+#endif
+
 static void qsufsort(int64_t *I,int64_t *V,const uint8_t *old,int64_t oldsize)
 {
 	int64_t buckets[256];
@@ -119,7 +126,12 @@ static void qsufsort(int64_t *I,int64_t *V,const uint8_t *old,int64_t oldsize)
 	buckets[0]=0;
 
 	for(i=0;i<oldsize;i++) I[++buckets[old[i]]]=i;
-	I[0]=oldsize;
+#if 1//def BSDIFF_USE_SAIS
+	/* Graeme Johnson's solution */
+	I[0] = oldsize; sais(old, ((int *)I)+1, oldsize);	return;
+#else
+	I[0] = oldsize; 
+#endif
 	for(i=0;i<oldsize;i++) V[i]=buckets[old[i]];
 	V[oldsize]=0;
 	for(i=1;i<256;i++) if(buckets[i]==buckets[i-1]+1) I[buckets[i]]=-1;
@@ -181,7 +193,10 @@ static int64_t search(const int64_t *I,const uint8_t *old,int64_t oldsize,
 	};
 }
 
-static int offtout( uint64_t i, uint8_t *buf ) {
+static int offtout( int64_t ii, uint8_t *buf ) {
+    /* taken from https://github.com/r-lyeh/vle */
+    uint64_t i = (uint64_t)ii;
+    i = i & (1ull << 63) ? ~(i << 1) : (i << 1);
     unsigned char *origin = buf;
     do {
         *buf++ = (unsigned char)( 0x80 | (i & 0x7f));

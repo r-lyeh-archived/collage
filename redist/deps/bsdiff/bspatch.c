@@ -38,11 +38,12 @@ int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, 
 #if !defined(BSPATCH_HEADER_ONLY)
 
 static int64_t offtin( const uint8_t *buf ) {
+    /* taken from https://github.com/r-lyeh/vle */
     uint64_t out = 0, j = -7;
     do {
         out |= (( ((uint64_t)(*buf)) & 0x7f) << (j += 7) );
     } while( ((uint64_t)(*buf++)) & 0x80 );
-    return (int64_t)out;
+    return (int64_t)( out & (1) ? ~(out >> 1) : (out >> 1) );
 }
 
 int bspatch(const uint8_t* old, int64_t oldsize, uint8_t* new, int64_t newsize, struct bspatch_stream* stream)

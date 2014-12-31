@@ -13,6 +13,6 @@ int main() {
     assert( !patched.empty() );
     assert( target == patched );
 
-    std::cout << "('" << source << "' << " << patch.size() << "-bytes patch) == '" << patched << "'" << std::endl;
+    std::cout << "'" << source << "' + " << patch.size() << "-bytes patch == '" << patched << "'" << std::endl;
     std::cout << "All ok." << std::endl;
 }

@@ -8,15 +8,15 @@ Collage
 - Collage is cross-platform.
 - Collage is BOOST licensed.
 
-### sample
+## sample
 ```c++
 #include <iostream>
 #include <cassert>
 #include "collage.hpp"
 
 int main() {
-    std::string source = "hello world";
-    std::string target = "hello cruel \x1 world";
+    std::string source = "hello world and thanks";
+    std::string target = "hello cruel \x1 world. thanks for the fish.";
 
     std::string patch = collage::diff( source, target );
     assert( !patch.empty() );
@@ -25,11 +25,18 @@ int main() {
     assert( !patched.empty() );
     assert( target == patched );
 
-    std::cout << "('" << source << "' << " << patch.size() << "-bytes patch) == '" << patched << "'" << std::endl;
+    std::cout << "'" << source << "' + " << patch.size() << "-bytes patch == '" << patched << "'" << std::endl;
     std::cout << "All ok." << std::endl;
 }
 ```
 
-### licenses
-- [Collage](https://github.com/r-lyeh/collage), BOOST licensed.
+## possible output
+```
+'hello world and thanks' + 51-bytes patch == 'hello cruel ☺ world. thanks for the fish.'
+All ok.
+```
+
+## licenses
+- [collage](https://github.com/r-lyeh/collage), BOOST licensed.
 - [bsdiff](https://github.com/mendsley/bsdiff), by Colin Percival and Matthew Endsley, BSD2 licensed.
+- [sais-lite](https://github.com/davehughes/sais), by Yuta Mori, MIT licensed.
