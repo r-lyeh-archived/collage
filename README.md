@@ -1,4 +1,4 @@
-Collage
+Collage <a href="https://travis-ci.org/r-lyeh/collage"><img src="https://api.travis-ci.org/r-lyeh/collage.svg?branch=master" align="right" /></a>
 =======
 
 - Collage is a lightweight C++ library to diff and patch data.
