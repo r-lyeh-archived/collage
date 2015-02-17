@@ -128,7 +128,7 @@ static void qsufsort(int64_t *I,int64_t *V,const uint8_t *old,int64_t oldsize)
 	for(i=0;i<oldsize;i++) I[++buckets[old[i]]]=i;
 #if 1//def BSDIFF_USE_SAIS
 	/* Graeme Johnson's solution */
-	I[0] = oldsize; sais(old, ((int *)I)+1, oldsize);	return;
+	I[0] = oldsize; sais(old, &I[1], oldsize);	return;
 #else
 	I[0] = oldsize; 
 #endif

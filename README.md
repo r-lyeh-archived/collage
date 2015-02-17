@@ -32,7 +32,7 @@ int main() {
 
 ## possible output
 ```
-'hello world and thanks' + 51-bytes patch == 'hello cruel ☺ world. thanks for the fish.'
+'hello world and thanks' + 46-bytes patch == 'hello cruel ☺ world. thanks for the fish.'
 All ok.
 ```
 

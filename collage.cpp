@@ -95,6 +95,10 @@ static void split(int64_t *I,int64_t *V,int64_t start,int64_t len,int64_t h)
 #ifndef _SAIS_H
 #define _SAIS_H 1
 
+#include <stdint.h>
+#define sais_index_type int64_t
+#define sais_bool_type  int
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -102,18 +106,18 @@ extern "C" {
 /* find the suffix array SA of T[0..n-1]
    use a working space (excluding T and SA) of at most 2n+O(lg n) */
 int
-sais(const unsigned char *T, int *SA, int n);
+sais(const unsigned char *T, sais_index_type *SA, int n);
 
 /* find the suffix array SA of T[0..n-1] in {0..k-1}^n
    use a working space (excluding T and SA) of at most MAX(4k,2n) */
 int
-sais_int(const int *T, int *SA, int n, int k);
+sais_int(const int *T, sais_index_type *SA, int n, int k);
 
 /* burrows-wheeler transform */
 int
-sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n);
+sais_bwt(const unsigned char *T, unsigned char *U, sais_index_type *A, int n);
 int
-sais_int_bwt(const int *T, int *U, int *A, int n, int k);
+sais_int_bwt(const int *T, sais_index_type *U, sais_index_type *A, int n, int k);
 
 #ifdef __cplusplus
 } /* extern "C" */
@@ -157,6 +161,10 @@ sais_int_bwt(const int *T, int *U, int *A, int n, int k);
 #ifndef _SAIS_H
 #define _SAIS_H 1
 
+#include <stdint.h>
+#define sais_index_type int64_t
+#define sais_bool_type  int
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -164,18 +172,18 @@ extern "C" {
 /* find the suffix array SA of T[0..n-1]
    use a working space (excluding T and SA) of at most 2n+O(lg n) */
 int
-sais(const unsigned char *T, int *SA, int n);
+sais(const unsigned char *T, sais_index_type *SA, int n);
 
 /* find the suffix array SA of T[0..n-1] in {0..k-1}^n
    use a working space (excluding T and SA) of at most MAX(4k,2n) */
 int
-sais_int(const int *T, int *SA, int n, int k);
+sais_int(const int *T, sais_index_type *SA, int n, int k);
 
 /* burrows-wheeler transform */
 int
-sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n);
+sais_bwt(const unsigned char *T, unsigned char *U, sais_index_type *A, int n);
 int
-sais_int_bwt(const int *T, int *U, int *A, int n, int k);
+sais_int_bwt(const int *T, sais_index_type *U, sais_index_type *A, int n, int k);
 
 #ifdef __cplusplus
 } /* extern "C" */
@@ -191,8 +199,6 @@ sais_int_bwt(const int *T, int *U, int *A, int n, int k);
 # define MINBUCKETSIZE 256
 #endif
 
-#define sais_index_type int
-#define sais_bool_type  int
 #define SAIS_LMSSORT2_LIMIT 0x3fffffff
 
 #define SAIS_MYMALLOC(_num, _type) ((_type *)malloc((_num) * sizeof(_type)))
@@ -609,10 +615,10 @@ sais_main(const void *T, sais_index_type *SA,
 	}
 	for(i = 0; i < m; ++i) { SA[i] = RA[SA[i]]; }
 	if(flags & 4) {
-	  if((C = B = SAIS_MYMALLOC(k, int)) == NULL) { return -2; }
+	  if((C = B = SAIS_MYMALLOC(k, sais_index_type)) == NULL) { return -2; }
 	}
 	if(flags & 2) {
-	  if((B = SAIS_MYMALLOC(k, int)) == NULL) {
+	  if((B = SAIS_MYMALLOC(k, sais_index_type)) == NULL) {
 		if(flags & 1) { SAIS_MYFREE(C, k, sais_index_type); }
 		return -2;
 	  }
@@ -647,21 +653,21 @@ sais_main(const void *T, sais_index_type *SA,
 /*---------------------------------------------------------------------------*/
 
 int
-sais(const unsigned char *T, int *SA, int n) {
+sais(const unsigned char *T, sais_index_type *SA, int n) {
   if((T == NULL) || (SA == NULL) || (n < 0)) { return -1; }
   if(n <= 1) { if(n == 1) { SA[0] = 0; } return 0; }
   return sais_main(T, SA, 0, n, UCHAR_SIZE, sizeof(unsigned char), 0);
 }
 
 int
-sais_int(const int *T, int *SA, int n, int k) {
+sais_int(const int *T, sais_index_type *SA, int n, int k) {
   if((T == NULL) || (SA == NULL) || (n < 0) || (k <= 0)) { return -1; }
   if(n <= 1) { if(n == 1) { SA[0] = 0; } return 0; }
   return sais_main(T, SA, 0, n, k, sizeof(int), 0);
 }
 
 int
-sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n) {
+sais_bwt(const unsigned char *T, unsigned char *U, sais_index_type *A, int n) {
   int i, pidx;
   if((T == NULL) || (U == NULL) || (A == NULL) || (n < 0)) { return -1; }
   if(n <= 1) { if(n == 1) { U[0] = T[0]; } return n; }
@@ -675,7 +681,7 @@ sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n) {
 }
 
 int
-sais_int_bwt(const int *T, int *U, int *A, int n, int k) {
+sais_int_bwt(const int *T, sais_index_type *U, sais_index_type *A, int n, int k) {
   int i, pidx;
   if((T == NULL) || (U == NULL) || (A == NULL) || (n < 0) || (k <= 0)) { return -1; }
   if(n <= 1) { if(n == 1) { U[0] = T[0]; } return n; }
@@ -704,7 +710,7 @@ static void qsufsort(int64_t *I,int64_t *V,const uint8_t *old,int64_t oldsize)
 	for(i=0;i<oldsize;i++) I[++buckets[old[i]]]=i;
 #if 1//def BSDIFF_USE_SAIS
 	/* Graeme Johnson's solution */
-	I[0] = oldsize; sais(old, ((int *)I)+1, oldsize);	return;
+	I[0] = oldsize; sais(old, &I[1], oldsize);	return;
 #else
 	I[0] = oldsize;
 #endif

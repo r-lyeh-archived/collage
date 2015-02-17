@@ -35,8 +35,6 @@
 # define MINBUCKETSIZE 256
 #endif
 
-#define sais_index_type int
-#define sais_bool_type  int
 #define SAIS_LMSSORT2_LIMIT 0x3fffffff
 
 #define SAIS_MYMALLOC(_num, _type) ((_type *)malloc((_num) * sizeof(_type)))
@@ -453,10 +451,10 @@ sais_main(const void *T, sais_index_type *SA,
     }
     for(i = 0; i < m; ++i) { SA[i] = RA[SA[i]]; }
     if(flags & 4) {
-      if((C = B = SAIS_MYMALLOC(k, int)) == NULL) { return -2; }
+      if((C = B = SAIS_MYMALLOC(k, sais_index_type)) == NULL) { return -2; }
     }
     if(flags & 2) {
-      if((B = SAIS_MYMALLOC(k, int)) == NULL) {
+      if((B = SAIS_MYMALLOC(k, sais_index_type)) == NULL) {
         if(flags & 1) { SAIS_MYFREE(C, k, sais_index_type); }
         return -2;
       }
@@ -491,21 +489,21 @@ sais_main(const void *T, sais_index_type *SA,
 /*---------------------------------------------------------------------------*/
 
 int
-sais(const unsigned char *T, int *SA, int n) {
+sais(const unsigned char *T, sais_index_type *SA, int n) {
   if((T == NULL) || (SA == NULL) || (n < 0)) { return -1; }
   if(n <= 1) { if(n == 1) { SA[0] = 0; } return 0; }
   return sais_main(T, SA, 0, n, UCHAR_SIZE, sizeof(unsigned char), 0);
 }
 
 int
-sais_int(const int *T, int *SA, int n, int k) {
+sais_int(const int *T, sais_index_type *SA, int n, int k) {
   if((T == NULL) || (SA == NULL) || (n < 0) || (k <= 0)) { return -1; }
   if(n <= 1) { if(n == 1) { SA[0] = 0; } return 0; }
   return sais_main(T, SA, 0, n, k, sizeof(int), 0);
 }
 
 int
-sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n) {
+sais_bwt(const unsigned char *T, unsigned char *U, sais_index_type *A, int n) {
   int i, pidx;
   if((T == NULL) || (U == NULL) || (A == NULL) || (n < 0)) { return -1; }
   if(n <= 1) { if(n == 1) { U[0] = T[0]; } return n; }
@@ -519,7 +517,7 @@ sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n) {
 }
 
 int
-sais_int_bwt(const int *T, int *U, int *A, int n, int k) {
+sais_int_bwt(const int *T, sais_index_type *U, sais_index_type *A, int n, int k) {
   int i, pidx;
   if((T == NULL) || (U == NULL) || (A == NULL) || (n < 0) || (k <= 0)) { return -1; }
   if(n <= 1) { if(n == 1) { U[0] = T[0]; } return n; }
