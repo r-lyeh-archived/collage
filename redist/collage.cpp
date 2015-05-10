@@ -1,3 +1,6 @@
+// Collage, lightweight C++ library to diff and patch arbitrary data
+// rlyeh, zlib/libpng licensed
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -79,8 +82,8 @@ namespace collage {
                 patch_stream.read = bs_read;
                 if( 0 == bspatch( (const uint8_t *)from0, from1 - from0, (uint8_t *)(&result[0]), result.size(), &patch_stream ) ) {
                     return true;
-                }                
-            }           
+                }
+            }
         }
         return false;
     }

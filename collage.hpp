@@ -1,8 +1,11 @@
+// Collage, lightweight C++ library to diff and patch arbitrary data
+// rlyeh, zlib/libpng licensed
+
 #pragma once
 #include <string>
 
 namespace collage {
-    // available libraries 
+    // available libraries
     enum { BSDIFF = 0 };
 
     // api

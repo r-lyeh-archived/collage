@@ -6,7 +6,7 @@ Collage <a href="https://travis-ci.org/r-lyeh/collage"><img src="https://api.tra
 - Collage is tiny. Single header and source files.
 - Collage is stand-alone. All dependencies are embedded.
 - Collage is cross-platform.
-- Collage is BOOST licensed.
+- Collage is zlib/libpng licensed.
 
 ## sample
 ```c++
@@ -37,6 +37,6 @@ All ok.
 ```
 
 ## licenses
-- [collage](https://github.com/r-lyeh/collage), BOOST licensed.
+- [collage](https://github.com/r-lyeh/collage), zlib/libpng licensed.
 - [bsdiff](https://github.com/mendsley/bsdiff), by Colin Percival and Matthew Endsley, BSD2 licensed.
 - [sais-lite](https://github.com/davehughes/sais), by Yuta Mori, MIT licensed.

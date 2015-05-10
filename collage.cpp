@@ -1,3 +1,6 @@
+// Collage, lightweight C++ library to diff and patch arbitrary data
+// rlyeh, zlib/libpng licensed
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
